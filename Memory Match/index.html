@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Memory Match</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- node server ile açıldığında favicon gözükmüyor -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: rgb(241, 241, 241);
+            overflow-x: hidden;
+        }
+        .box {
+            background-color: rgb(171, 171, 171);
+            border-radius: 5px;
+            padding: 50px;
+            border: 2px solid rgb(255, 235, 202);
+        }
+        .box :hover{
+            cursor: pointer;
+        }
+        .box.clicked {
+            background-color: rgb(0, 123, 255);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="row justify-content-center mt-2">
+        <div style="background-color: rgb(232, 232, 232); font-size: 24px; color: rgb(255, 162, 0); padding: 7px; border: 2px solid rgb(255, 179, 0); border-radius: 5px;">Moves : <span id="moves">0</span></div>
+    </div>  <!-- rgb(0, 123, 255); -->
+
+    <div class="row justify-content-center mt-2">
+        <div style="background-color: rgb(232, 232, 232); font-size: 24px; color: rgb(255, 162, 0); padding: 7px; border: 2px solid rgb(255, 179, 0); border-radius: 5px;">Best : <span id="bestScore"></span></div>
+    </div>
+    
+    <div class="row justify-content-center mt-2">
+        <div id="div1" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div2" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div3" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div4" class="box" style="padding: 62px; margin: 5px;"></div>
+    </div>
+    <div class="row justify-content-center">
+        <div id="div5" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div6" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div7" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div8" class="box" style="padding: 62px; margin: 5px;"></div>
+    </div>
+    <div class="row justify-content-center">
+        <div id="div9" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div10" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div11" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div12" class="box" style="padding: 62px; margin: 5px;"></div>
+    </div>
+    <div class="row justify-content-center">
+        <div id="div13" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div14" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div15" class="box" style="padding: 62px; margin: 5px;"></div>
+        <div id="div16" class="box" style="padding: 62px; margin: 5px;"></div>
+    </div>
+
+</body>
+
+<script>
+    
+    async function writeToTextFile(text) {
+        try {
+            const response = await fetch('/write-to-file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+            const result = await response.text();
+            console.log(result);
+        } catch (error) {
+            console.error('Bir hata oluştu:', error);
+        }
+    }
+
+    async function readFromFile() {
+        try {
+            const response = await fetch('/read-the-file', {
+                method: 'POST'
+            });
+            const data = await response.text();
+            console.log('Data from server:', data);
+            const bestScoreElement = document.getElementById('bestScore');
+            bestScoreElement.textContent = data;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    readFromFile();     
+
+    // 8 tane renk belirle ve değişkenlere tanımla 
+    var teal = 0, red = 0, deeppink = 0, deepskyblue = 0, yellow = 0, greenyellow = 0, mediumslateblue = 0, orange = 0;
+
+    // Her el bu 8 tane renk 16 karda her renkten 2 tane olacak şekilde rastgele dağıtılsın ve eşlensin
+    const colors = [teal, red, deeppink, deepskyblue, yellow, greenyellow, mediumslateblue, orange];
+    const colorNames = ['teal', 'red', 'deeppink', 'deepskyblue', 'yellow', 'greenyellow', 'mediumslateblue', 'orange'];
+
+    const colorNameMap = colors.map((a, b) => [a, colorNames[b]]);
+
+    const divNumbers = [];
+
+    for(let i=0; i<16; i++){
+        
+        let random = Math.floor(Math.random() * (8));
+
+        if(colors[random]<2){
+
+            colors[random]++;
+
+            divNumbers.push(random);
+
+        }else{
+            i--;
+        }
+
+    }
+
+    var clicked = 0;
+
+    var clickedEnabled = true;
+
+    var openedColor = ['a', 'b'];
+
+    var openedDivs = ['x', 'y'];
+
+    var numberOfWhites = 0;
+
+    var divs = document.querySelectorAll('.box');
+    divs.forEach(function(div, index) {
+        div.addEventListener('click', function() {
+
+            if(!clickedEnabled || div.style.backgroundColor == 'white') return;
+            
+            if (div.style.backgroundColor === 'rgb(171, 171, 171)' || !div.style.backgroundColor) {
+
+                div.style.backgroundColor = colorNameMap[divNumbers[index]][1];
+
+                openedDivs[clicked] = div;
+
+                openedColor[clicked] = div.style.backgroundColor;
+
+            } else {
+                div.style.backgroundColor = 'rgb(171, 171, 171)';
+            }
+
+            clicked++;
+
+            if(clicked==2){
+
+                clickedEnabled = false;
+
+                var isEqualState = false;
+
+                if(openedColor[0] == openedColor[1]){
+
+                    isEqualState = true;
+
+                }
+
+                openedColor[0] = 'a';
+                openedColor[1] = 'b';
+
+                setTimeout(function() {
+
+                    divs.forEach(function(div) {
+                        if(div.style.backgroundColor != 'white')
+                        div.style.backgroundColor = 'rgb(171, 171, 171)';
+                    });
+
+                    
+                    if(isEqualState){
+                        openedDivs[0].style.backgroundColor = 'white';
+                        openedDivs[1].style.backgroundColor = 'white';
+                        numberOfWhites++;
+                        console.log(numberOfWhites);
+                    }
+
+                    clickedEnabled = true;
+
+                    var movesDiv = document.getElementById('moves');
+
+                    movesDiv.textContent++;
+
+                    clicked = 0;
+
+                    if(numberOfWhites==8){
+
+                        console.log(movesDiv.textContent);
+
+                        if(movesDiv.textContent < document.getElementById('bestScore').textContent){ // just for now
+                            writeToTextFile(movesDiv.textContent);
+                        }
+                        
+                        if(movesDiv.textContent<10){
+                            alert(movesDiv.textContent + " Moves Helaal!");
+                        }
+                        if(movesDiv.textContent>10 && moves<20){
+                            alert(movesDiv.textContent + " Moves Very Enoough!");
+                        }
+                        if(movesDiv.textContent>20){
+                            alert(movesDiv.textContent + " Moves Not bad but you should focuse")
+                        }
+                        // alert("Kıngracıleyşıns!");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500);
+                    }
+
+                }, 1000);
+            }
+
+        });
+    });
+</script>
+
+</html>

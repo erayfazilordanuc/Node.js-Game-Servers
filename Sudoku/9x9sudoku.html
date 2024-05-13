@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Sudoku</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: rgb(247, 247, 247);
+            overflow-x: hidden;
+        }
+        input {
+            caret-color: transparent;
+            text-align: center;
+            padding: 25;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-size: 35px;
+            color: rgb(0, 170, 255);
+        }
+        .box {
+            background-color: rgb(234, 234, 234);
+            border: 2px solid rgb(0, 170, 255);
+            border-radius: 7px;
+            height: 60px;
+            width: 60px;
+            margin: 2px;
+        }
+        .box:focus {
+            border: 2px;
+        }
+        .incorrect {
+            color: red;
+        }
+        .right-border {
+            border-right: 2px solid black;
+        }
+        .left-border {
+            border-left: 2px solid black;
+        }
+        .top-border {
+            border-top: 2px solid black;
+        }
+        .bottom-border {
+            border-bottom: 2px solid black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="row justify-content-center" style="margin-bottom: 35px; margin-top: 35px;">
+        <div style="background-color: rgb(235, 235, 235); font-size: 24px; color: rgb(0, 170, 255); padding: 5px; border: 2px solid rgb(0, 179, 255); border-radius: 5px;">Rights: <span id="rights">5</span></div>
+    </div>
+
+    <div class="container" id="sudokuBoard"></div>
+
+</body>
+
+<script>
+
+// kutular oluşturulur
+for (let i=0; i<9; i++) {
+
+const div = document.createElement('div');
+div.classList.add('row', 'justify-content-center');
+
+for(let j=0; j<9; j++){
+    
+    const input = document.createElement('input');
+    input.classList.add('box');
+    input.setAttribute('maxlength', '1');
+    input.setAttribute('autocomplete', 'off');
+    input.id = 'in' + (i * 9 + j);
+    
+    for(let c=2; c<78; c++){
+        if(input.id===('in'+c)){
+            input.classList.add('right-border');
+        }
+        if(c===74){
+            c=-4;
+        }
+        c+=8;
+    }
+
+    for(let c=3; c<79; c++){
+        if(input.id===('in'+c)){
+            input.classList.add('left-border');
+        }
+        if(c===75){
+            c=-3;
+        }
+        c+=8;
+    }
+
+    for(let r=18; r<54; r++){
+        if(input.id===('in'+r)){
+            input.classList.add('bottom-border');
+        }
+        if(r===26){
+            r=44;
+        }
+    }
+
+    for(let r=27; r<63; r++){
+        if(input.id===('in'+r)){
+            input.classList.add('top-border');
+        }
+        if(r===35){
+            r=53;
+        }
+    }
+    
+    div.appendChild(input);
+   
+}
+
+document.getElementById('sudokuBoard').appendChild(div);
+
+}
+
+// sample board
+// var board = [
+//     [5, 0, 0, 6, 7, 8, 0, 0, 0],
+//     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+//     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+//     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+//     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+//     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+//     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+//     [0, 0, 0, 0, 1, 9, 0, 0, 5],
+//     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+// ];
+
+function solveSudoku(board) {
+    const isEmpty = (row, col) => board[row][col] === 0;
+
+    const isValid = (row, col, num) => {
+        for (let i = 0; i < 9; i++) {
+            if (board[row][i] === num || board[i][col] === num || board[3 * Math.floor(row / 3) + Math.floor(i / 3)][3 * Math.floor(col / 3) + i % 3] === num) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const solve = () => {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                if (isEmpty(row, col)) {
+                    for (let num = 1; num <= 9; num++) {
+                        if (isValid(row, col, num)) {
+                            board[row][col] = num;
+                            if (solve()) {
+                                return true;
+                            }
+                            board[row][col] = 0;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    solve();
+}
+
+var board = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
+
+const isEmpty = (row, col) => board[row][col] === 0;
+
+const isValid = (row, col, num) => {
+    for (let i = 0; i < 9; i++) {
+        if (board[row][i] === num || board[i][col] === num || board[3 * Math.floor(row / 3) + Math.floor(i / 3)][3 * Math.floor(col / 3) + i % 3] === num) {
+            return false;
+        }
+    }
+    return true;
+};
+
+const numberCounter = (number) => {
+    var count = 0;
+    for(let r=0; r<9; r++){
+        for(let c=0; c<9; c++){
+            if(board[r][c] === number) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+var avans = 0;
+
+// creating random board
+for(let rep=0; rep<3; rep++){
+    for(let r=0; r<9; r+=3){
+        for(let c=0; c<9; c+=3){
+            var randNumber = Math.floor(Math.random() * (9)+1);
+            if(isValid(r, c, randNumber) && isEmpty(r, c)){
+                avans++;
+                board[r][c] = randNumber;
+            }
+        }
+    }
+}
+
+// creating random board
+for(let rep=0; rep<3; rep++){
+    for(let r=0; r<9; r+=2){
+        for(let c=0; c<9; c+=2){
+            var randNumber = Math.floor(Math.random() * (9)+1);
+            if(isValid(r, c, randNumber) && isEmpty(r, c)){
+                avans++;
+                board[r][c] = randNumber;
+            }
+        }
+    }
+}
+
+// it finds the one of the most given avans number
+var min = 9;
+var minCount = 9;
+var most = 0;
+var mostCount = 0;
+for(let n=1; n<=9; n++){
+    console.log(n + " sayısı " + numberCounter(n) + " kere var")
+    if(numberCounter(n) > mostCount){
+        most = n;
+        mostCount = numberCounter(n);
+    }
+    if(numberCounter(n) < minCount){
+        min = n;
+        minCount = numberCounter(n);
+    }
+}
+console.log("En çok geçen : " + most + "\n" + "En az geçen : " + min);
+
+// it adds the most counted number
+for(let r=0; r<7; r+=2){
+    for(let c=0; c<9; c+=2){
+        if(isValid(r, c, most) && isEmpty(r, c)){
+            avans++;
+            board[r][c] = most;
+        }
+    }
+}
+
+// it adds the min counted number
+for(let r=0; r<7; r+=2){
+    for(let c=0; c<9; c+=2){
+        if(isValid(r, c, min) && isEmpty(r, c)){
+            avans++;
+            board[r][c] = min;
+        }
+    }
+}
+
+
+// board oluşturulduktan sonra boardda avans verilen kutuları görülebilir yapar
+document.querySelectorAll('.box').forEach((input, index) => {
+    const row = Math.floor(index / 9);
+    const col = index % 9;
+    if (board[row][col] !== 0) {
+        input.value = board[row][col];
+    }
+});
+
+solveSudoku(board);
+
+for(let y=0; y<9; y++){
+        console.log(board[y][0] +"   "+ board[y][1] +"   "+ board[y][2] +"   "+ board[y][3] +"   "+ board[y][4] +"   "+ board[y][5] +"   "+ board[y][6] +"   "+ board[y][7] +"   "+ board[y][8]);
+}
+
+const inputs = document.querySelectorAll('.box');
+
+var correct = 0;
+
+inputs.forEach(function(input, index) { // bir sayı girildiğinde onu kontrol eder
+    input.addEventListener('input', () => {
+        if (input.value) {
+            if (input.value != board[Math.floor(index/9)][index % 9]) { 
+                input.classList.add('incorrect');
+                var rights = --document.getElementById("rights").textContent;
+                setTimeout(function() {
+                    if (rights === 0) {
+                        alert("GG!");
+                        location.reload();
+                    }
+                }, 250);
+                setTimeout(function() {
+                    input.value = "";
+                    input.classList.remove('incorrect');
+                }, 500);
+            }else{
+                correct++;
+                if(correct===(81-avans)){
+                    setTimeout(function() {
+                        alert("Hellaal!");
+                        location.reload();
+                    }, 250);
+                }
+            }
+        }
+    });
+});
+
+</script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>

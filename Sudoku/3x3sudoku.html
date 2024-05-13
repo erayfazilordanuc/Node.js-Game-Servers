@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Sudoku</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        input {
+            caret-color: transparent;
+            text-align: center;
+            padding: 50;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-size: 35px;
+            color: rgb(0, 170, 255);
+        }
+        .box {
+            background-color: rgb(235, 235, 235);
+            border: 1px solid rgb(0, 170, 255);
+            border-radius: 7px;
+            height: 100px;
+            width: 100px;
+            margin: 5px;
+        }
+        .box:focus {
+            border: 2px;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="row justify-content-center mb-5" style="margin-top: 55px;">
+        <div style="background-color: rgb(235, 235, 235); font-size: 24px; color: rgb(0, 170, 255); padding: 7px; border: 2px solid rgb(0, 179, 255); border-radius: 5px;">Rights: <span id="rights">3</span></div>
+    </div>
+
+    <div class="row justify-content-center">
+        <input id="in0" class="box" maxlength="1" autocomplete="off">
+        <input id="in1" class="box" maxlength="1" autocomplete="off">
+        <input id="in2" class="box" maxlength="1" autocomplete="off">
+    </div>
+
+    <div class="row justify-content-center">
+        <input id="in3" class="box" maxlength="1" autocomplete="off">
+        <input id="in4" class="box" maxlength="1" autocomplete="off">
+        <input id="in5" class="box" maxlength="1" autocomplete="off">
+    </div>
+
+    <div class="row justify-content-center">
+        <input id="in6" class="box" maxlength="1" autocomplete="off">
+        <input id="in7" class="box" maxlength="1" autocomplete="off">
+        <input id="in8" class="box" maxlength="1" autocomplete="off">
+    </div>
+
+</body>
+
+<script>
+
+// var sampleRand = Math.floor(Math.random() * (max - min + 1) + min);
+
+var in0=-10, in1=-9, in2=-8, in3=-7, in4=-6, in5=-5, in6=-4, in7=-3, in8=-2;
+
+while(in0===-10 || in1===-9 || in2===-8 || in0===in1 || in1===in2 || in2===in0){
+    randNumber1 = Math.floor(Math.random() * (3)+1);
+    randNumber2 = Math.floor(Math.random() * (3)+1);
+    randNumber3 = Math.floor(Math.random() * (3)+1);
+
+    in0 = randNumber1;
+    in1 = randNumber2;
+    in2 = randNumber3;
+}
+
+while(in3===in5 || in3===in0 || in3===in4 || in4===in1 || in4===in5 || in5===in2 || in3===-7 ||in4===-6 || in5===-5){
+    randNumber1 = Math.floor(Math.random() * (3)+1);
+    randNumber2 = Math.floor(Math.random() * (3)+1);
+    randNumber3 = Math.floor(Math.random() * (3)+1);
+
+    in3 = randNumber1;
+    in4 = randNumber2;
+    in5 = randNumber3;
+}
+
+while(in6===in0 || in7===in1 || in8===in2 || in6===in8 || in6===in3 || in6===in7 || in7===in4 || in7===in8 || in8===in5 || in6===-4 ||in7===-3 || in8===-2){
+    randNumber1 = Math.floor(Math.random() * (3)+1);
+    randNumber2 = Math.floor(Math.random() * (3)+1);
+    randNumber3 = Math.floor(Math.random() * (3)+1);
+
+    in6 = randNumber1;
+    in7 = randNumber2;
+    in8 = randNumber3;
+}
+
+exact = [in0, in1, in2, in3, in4, in5, in6, in7, in8];
+
+const inputs = document.querySelectorAll('input');
+
+var numberPutted = 0;
+
+inputs.forEach(function(input, index) {
+    input.addEventListener('input', () => {
+
+        if (input.value) {
+            if(input.value!=exact[index]){
+                input.classList.add('incorrect');
+                var rights = --document.getElementById("rights").textContent;
+                setTimeout(function() {
+                    if(rights===0){
+                        alert("GG!");
+                        location.reload();
+                    }
+                }, 250);
+                setTimeout(function() {
+                    input.value = "";
+                    input.classList.remove('incorrect');
+                }, 500);
+            }else{
+                numberPutted++;
+            }
+        }
+        if(numberPutted===9){
+            setTimeout(function() {
+                alert("Helaal!");
+                location.reload();
+            }, 250);
+        }
+
+    });
+});
+
+// in0 in1 in2
+// in3 in4 in5
+// in6 in7 in8
+
+console.log("\n" + in0 + in1 + in2 +"\n"+ in3 + in4 + in5 +"\n"+  in6 + in7 + in8);
+
+</script>
+
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>

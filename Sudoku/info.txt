@@ -1,0 +1,2 @@
+- write "node server.js" to terminal (bash is better)
+- open the page "localhost:8080" on browser
